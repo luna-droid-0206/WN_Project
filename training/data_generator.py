@@ -135,7 +135,7 @@ def generate_dataset(
     # Stack channel sequences
     channels_array = np.stack(all_channels, axis=0)  # [n_samples, seq_len, n_subcarriers, 2]
     print(f"Dataset shape: {channels_array.shape}")
-    print(f"MCS distribution: {np.bincount(mcs_labels, minlength=DataConfig.N_MCS_CLASSES+1)}")
+    print(f"MCS distribution: {np.bincount(mcs_labels, minlength=DataConfig.N_MCS_CLASSES)}")
 
     # Split into train/val/test
     n_train = int(n_samples * split_ratio[0])

@@ -28,7 +28,7 @@ def set_global_seed(seed: int = GLOBAL_SEED):
 class DataConfig:
     N_SUBCARRIERS = 72  # LTE/5G typical (12 subcarriers per RB, 6 RBs)
     SEQ_LEN = 10  # Number of past OFDM symbols to use as context
-    N_MCS_CLASSES = 15  # 4G LTE CQI indices 1-15 (0 reserved for no transmission)
+    N_MCS_CLASSES = 16  # MCS indices 0-15: 0=no transmission, 1-15=LTE CQI levels
     SNR_RANGE_DB = (0.0, 30.0)  # Min and max SNR in dB
     SNR_STEP = 0.5  # Step size for SNR sampling
     N_SAMPLES_TRAIN = 80000

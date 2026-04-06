@@ -22,7 +22,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from tqdm import tqdm
 
 # Import local modules
@@ -94,7 +94,7 @@ def train_epoch(
         optimizer.zero_grad(set_to_none=True)
 
         if use_amp and scaler is not None:
-            with autocast():
+            with autocast('cuda'):
                 outputs = model(channels)
                 loss = criterion(outputs, labels)
             scaler.scale(loss).backward()
@@ -276,7 +276,7 @@ def train_model(
     )
 
     # Mixed precision scaler
-    scaler = GradScaler() if use_amp and device.type == 'cuda' else None
+    scaler = GradScaler('cuda') if use_amp and device.type == 'cuda' else None
     if scaler:
         print("Using Automatic Mixed Precision (AMP)")
 

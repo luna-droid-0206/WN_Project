@@ -179,7 +179,7 @@ class TemporalAttentionTransformer(nn.Module):
         n_layers: int = 2,
         d_ff: int = 256,
         dropout: float = 0.1,
-        n_classes: int = 15,
+        n_classes: int = 16,
         max_pos_encoding: int = 100
     ):
         super().__init__()
