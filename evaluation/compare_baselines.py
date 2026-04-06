@@ -5,16 +5,24 @@ Loads metrics from each model's results and generates comprehensive comparison p
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import sys
 
-from config import set_global_seed, GLOBAL_SEED
-from utils import load_metrics_file
-from visualization import (
+# Add project root to Python path for absolute imports when running as script
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Import local modules
+from training.config import set_global_seed, GLOBAL_SEED, DataConfig
+from evaluation.metrics import load_metrics_file
+from evaluation.visualization import (
     plot_throughput_vs_snr,
     plot_class_accuracy_comparison,
     plot_training_history
@@ -201,7 +209,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from training.config import DataConfig
-    from datetime import datetime
-
     main()

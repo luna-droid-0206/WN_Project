@@ -24,10 +24,10 @@ pip install -r requirements.txt
 python training/data_generator.py --n_samples 100000 --output data/
 
 # 3. Train attention model (default)
-python training/train.py --model attention --config configs/attention.yaml
+python training/train.py --model attention --config configs/attention.json
 
 # 4. Evaluate all models
-python evaluation/compare_baselines.py --checkpoints results/checkpoints/
+python evaluation/compare_baselines.py
 
 # 5. Visualize results
 jupyter notebook notebooks/analysis.ipynb
