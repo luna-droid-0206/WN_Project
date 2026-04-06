@@ -45,7 +45,7 @@ def find_training_metrics(results_dir: str, model_name: str) -> dict:
 
     # Fallback: look for latest metrics file
     metrics_dir = Path("results/metrics")
-    pattern = f"{model_name}_*_metrics.json"
+    pattern = f"{model_name}_*metrics.json"
     candidates = sorted(metrics_dir.glob(pattern), key=lambda p: p.stat().st_mtime)
     if candidates:
         return load_metrics_file(str(candidates[-1]))
