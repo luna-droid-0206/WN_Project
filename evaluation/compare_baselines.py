@@ -57,23 +57,33 @@ def load_all_model_metrics(
     results_dir: str,
     model_names: List[str]
 ) -> Dict[str, dict]:
-    """Load final test metrics for all models."""
+    """Load final test metrics for all models, with fallback to training metrics."""
     metrics_dir = Path("results/metrics")
     all_metrics = {}
 
     for model_name in model_names:
-        # Try to find the latest test metrics file
-        candidates = sorted(
-            list(metrics_dir.glob(f"{model_name}_test_metrics.json")) +
-            list(metrics_dir.glob(f"{model_name}_training_metrics.json")),
+        # Try to find the latest test metrics file first (preferred)
+        test_candidates = sorted(
+            metrics_dir.glob(f"{model_name}_test_metrics.json"),
             key=lambda p: p.stat().st_mtime
         )
 
-        if candidates:
-            metrics = load_metrics_file(str(candidates[-1]))
+        if test_candidates:
+            metrics = load_metrics_file(str(test_candidates[-1]))
             all_metrics[model_name] = metrics
+            print(f"[Info] Loaded test metrics for {model_name}")
         else:
-            print(f"[Warning] No metrics found for {model_name}")
+            # Fallback: look for any metrics file (e.g., training_metrics.json)
+            train_candidates = sorted(
+                metrics_dir.glob(f"{model_name}_*metrics.json"),
+                key=lambda p: p.stat().st_mtime
+            )
+            if train_candidates:
+                metrics = load_metrics_file(str(train_candidates[-1]))
+                all_metrics[model_name] = metrics
+                print(f"[Warning] No test metrics for {model_name}, using training metrics instead")
+            else:
+                print(f"[Error] No metrics found for {model_name}")
 
     return all_metrics
 
@@ -96,12 +106,15 @@ def generate_comparison_plots(
         save_path=str(Path(output_dir) / "throughput_comparison.png")
     )
 
-    # 2. Per-class accuracy comparison
-    print("Generating per-class accuracy comparison...")
-    plot_class_accuracy_comparison(
-        class_accuracies,
-        save_path=str(Path(output_dir) / "class_accuracy_comparison.png")
-    )
+    # 2. Per-class accuracy comparison (only if data available)
+    if class_accuracies:
+        print("Generating per-class accuracy comparison...")
+        plot_class_accuracy_comparison(
+            class_accuracies,
+            save_path=str(Path(output_dir) / "class_accuracy_comparison.png")
+        )
+    else:
+        print("Skipping per-class accuracy plot: no per-class data available (run evaluate.py first)")
 
     # 3. Training curves (if available)
     print("Checking training history...")
@@ -121,6 +134,8 @@ def generate_comparison_plots(
                 save_path=str(Path(output_dir) / f"training_history_{model_name}.png"),
                 title=f"{model_name.upper()} - Training History"
             )
+    else:
+        print("No training history found for any model")
 
 
 def print_comparison_table(all_metrics: Dict[str, dict]):
@@ -192,6 +207,8 @@ def main():
 
     # Generate plots
     generate_comparison_plots(all_metrics, class_accuracies, args.output_dir)
+
+    # Note: If per-class accuracy data is missing, the per-class plot will be skipped
 
     # Save overall comparison JSON
     comparison_summary = {
