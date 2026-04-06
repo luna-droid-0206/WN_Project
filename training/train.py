@@ -271,8 +271,8 @@ def train_model(
         optimizer,
         mode='min',
         factor=lr_factor,
-        patience=lr_patience,
-        verbose=True
+        patience=lr_patience
+        # verbose=True
     )
 
     # Mixed precision scaler
