@@ -64,7 +64,8 @@ def load_all_model_metrics(
     for model_name in model_names:
         # Try to find the latest test metrics file
         candidates = sorted(
-            metrics_dir.glob(f"{model_name}_test_metrics.json"),
+            list(metrics_dir.glob(f"{model_name}_test_metrics.json")) +
+            list(metrics_dir.glob(f"{model_name}_training_metrics.json")),
             key=lambda p: p.stat().st_mtime
         )
 
